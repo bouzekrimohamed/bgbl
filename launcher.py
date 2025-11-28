@@ -147,7 +147,7 @@ def main():
     time.sleep(3)
 
     # Ouvrir automatiquement le site GitHub hébergé
-    webbrowser.open("https://bouzekrimohamed.github.io/Ateliers-Pivot-bigblue/")
+    webbrowser.open("https://bouzekrimohamed.github.io/bgbl/")
 
     # Notification système (si win10toast dispo)
     try:
