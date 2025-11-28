@@ -337,39 +337,38 @@
     btnCsvComma.addEventListener('click', ()=> exportCSV(',', false));
     btnSftp.addEventListener('click', ()=> exportCSV(';', true)); // Envoi SFTP avec ;
     // Bouton télécharger depuis la source
-    // Remplace tout le bloc du bouton downloadSourceBtn par ÇA :
-downloadSourceBtn.addEventListener('click', async () => {
-  try {
-    spinner.style.display = 'block';
-    statusEl.textContent = 'Récupération du stock depuis Metabase...';
+    downloadSourceBtn.addEventListener('click', async () => {
+      try {
+        spinner.style.display = 'block';
+        statusEl.textContent = 'Récupération du stock depuis Metabase...';
 
-    const response = await fetch('http://127.0.0.1:5000/download-metabase');
-    
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(err || 'Serveur local non atteint');
-    }
+        const response = await fetch('http://127.0.0.1:5000/download-metabase');
+        
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error(err || 'Serveur local non atteint');
+        }
 
-    const blob = await response.blob();
-    const file = new File([blob], 'Stock_BGB.xlsx', {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        const blob = await response.blob();
+        const file = new File([blob], 'Stock_BGB.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        inputFile.files = dataTransfer.files;
+        onFileChosen();
+
+        statusEl.textContent = 'Stock du jour chargé automatiquement ! Prêt à exporter.';
+        
+      } catch (err) {
+        spinner.style.display = 'none';
+        alert(`Impossible de récupérer le stock automatiquement.\n\n` +
+              `Assurez-vous que le serveur local (BigBlue ESR_ST.exe) est lancé !\n\n` +
+              `Erreur : ${err.message}`);
+        console.error(err);
+      }
     });
-
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-    inputFile.files = dataTransfer.files;
-    onFileChosen();
-
-    statusEl.textContent = 'Stock du jour chargé automatiquement ! Prêt à exporter.';
-    
-  } catch (err) {
-    spinner.style.display = 'none';
-    alert(`Impossible de récupérer le stock automatiquement.\n\n` +
-          `Assurez-vous que le serveur local (BigBlue ESR_ST.exe) est lancé !\n\n` +
-          `Erreur : ${err.message}`);
-    console.error(err);
-  }
-});
     // Convertit un tableau JS -> CSV (échappement correct)
     function toCSV(rows, delimiter){
       const esc = v => {
