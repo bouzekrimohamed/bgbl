@@ -181,6 +181,25 @@ def main():
     except Exception:
         pass
 
+@app.route("/download-metabase")
+def download_metabase():
+    import requests
+    url = "https://metabase.internal.bigblue.co/api/public/card/bb321409-6274-4e49-a7c6-1848485711fb/query/xlsx?parameters=%5B%7B%22id%22%3A%22083183ed-2e25-4369-a038-3018b590dd20%22%2C%22value%22%3Anull%7D%2C%7B%22id%22%3A%22f38e5c5b-8834-48a1-a796-a8220fab3080%22%2C%22value%22%3Anull%7D%2C%7B%22id%22%3A%22333ac6b7-3aa3-4b6e-bc96-83864304c937%22%2C%22value%22%3Anull%7D%5D"
+    
+    try:
+        print("Téléchargement du stock depuis Metabase...")
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        
+        return Response(
+            r.content,
+            headers={
+                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Content-Disposition": "attachment; filename=Stock_BGB.xlsx"
+            }
+        )
+    except Exception as e:
+        return str(e), 500
 
 if __name__ == "__main__":
     main()
